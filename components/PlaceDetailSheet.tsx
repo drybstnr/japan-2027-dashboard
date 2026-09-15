@@ -1,0 +1,20 @@
+'use client';
+
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowUpRight, Clock3, ExternalLink, Globe, MapPin, Phone, Star, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import type { Place } from '@/types/place';
+import { MiniMap } from './MiniMap';
+
+export function PlaceDetailSheet({ place, onClose }: { place: Place | null; onClose: () => void }) {
+  const [details, setDetails] = useState<Place | null>(place);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => { setDetails(place); if (!place) return; const controller = new AbortController(); setLoading(true); fetch(`/api/places/${encodeURIComponent(place.placeId)}`, { signal: controller.signal }).then((response) => response.ok ? response.json() : null).then((data) => { if (data?.place) setDetails(normalizePlace(data.place)); }).catch(() => undefined).finally(() => setLoading(false)); return () => controller.abort(); }, [place]);
+  useEffect(() => { if (!place) return; const handleKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); }; document.addEventListener('keydown', handleKey); return () => document.removeEventListener('keydown', handleKey); }, [place, onClose]);
+  return <AnimatePresence>{details && <motion.div className="place-sheet-backdrop" onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><motion.div className="place-sheet" role="dialog" aria-modal="true" aria-label={details.name} onClick={(event) => event.stopPropagation()} initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 320, damping: 30 }}><div className="place-sheet-grabber" /><div className="place-sheet-header"><span className="section-kicker">PLACE DETAILS</span><button className="icon-button light" onClick={onClose} aria-label="Kapat"><X size={18} /></button></div>{details.photo && <img className="place-sheet-photo" src={details.photo} alt="" />}<div className="place-sheet-body"><div className="flex items-start justify-between gap-3"><div><h2>{details.name}</h2><p>{details.category || 'Restaurant'} · {details.address}</p></div><span className="place-rating large"><Star size={14} fill="currentColor" /> {details.rating?.toFixed(1) ?? '—'}</span></div><div className="place-detail-list"><span><MapPin size={15} /> {details.address}</span><span><Clock3 size={15} /> {loading ? 'Loading hours…' : details.openingHours?.[0] ?? 'Opening hours unavailable'}</span>{details.phone && <span><Phone size={15} /> {details.phone}</span>}{details.website && <a href={details.website} target="_blank" rel="noreferrer"><Globe size={15} /> Website <ArrowUpRight size={13} /></a>}</div><MiniMap place={details} /><a className="google-maps-button" href={`https://www.google.com/maps/search/?api=1&query=Google&query_place_id=${encodeURIComponent(details.placeId)}`} target="_blank" rel="noreferrer">Open in Google Maps <ExternalLink size={14} /></a></div></motion.div></motion.div>}</AnimatePresence>;
+}
+
+export function normalizePlace(raw: any): Place {
+  const photo = raw.photos?.[0];
+  return { placeId: raw.fsq_id ?? raw.id, name: raw.name ?? raw.displayName?.text ?? 'Unnamed place', category: raw.categories?.[0]?.name ?? raw.primaryType?.replaceAll('_', ' ') ?? 'Restaurant', address: raw.location?.formatted_address ?? raw.formattedAddress ?? raw.shortFormattedAddress ?? 'Address unavailable', neighborhood: raw.location?.neighborhood ?? raw.location?.locality, coordinates: { latitude: raw.geocodes?.main?.latitude ?? raw.location?.latitude ?? 0, longitude: raw.geocodes?.main?.longitude ?? raw.location?.longitude ?? 0 }, rating: raw.rating ? raw.rating / (raw.rating > 10 ? 10 : 1) : undefined, isOpen: raw.hours?.open_now ?? raw.currentOpeningHours?.openNow, openingHours: raw.hours?.display ?? raw.currentOpeningHours?.weekdayDescriptions, website: raw.website ?? raw.websiteUri, phone: raw.tel ?? raw.internationalPhoneNumber, photo: photo?.prefix && photo?.suffix ? `${photo.prefix}original${photo.suffix}` : undefined };
+}

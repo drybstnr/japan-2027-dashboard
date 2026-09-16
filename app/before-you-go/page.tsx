@@ -1,0 +1,31 @@
+'use client';
+
+import Link from 'next/link';
+import { ArrowLeft, Check, Plane, ShieldCheck } from 'lucide-react';
+import { AppCard } from '@/components/AppCard';
+import { ChecklistItem } from '@/components/ChecklistItem';
+import { useLocalStorageState } from '@/hooks/useLocalStorageState';
+
+const categories = [
+  { name: 'Transport', apps: [{ name: 'Suica Mobile', icon: 'Su', description: 'Japonya içi ulaşım ve küçük ödemeler için dijital kart.', iconColor: '#3177bf', iconBackground: '#e2effc' }, { name: 'Smart EX', icon: 'EX', description: 'Shinkansen biletlerini kolayca ayırt ve yönet.', iconColor: '#d46150', iconBackground: '#fbe8e3' }] },
+  { name: 'Navigation', apps: [{ name: 'Google Maps', icon: 'G', description: 'Rotaları, tren aktarmalarını ve kaydedilen yerleri bul.', iconColor: '#4285f4', iconBackground: '#e8f0fe' }, { name: 'Japan Travel by NAVITIME', icon: 'N', description: 'Japonya trenleri için detaylı ve güvenilir yolculuk planı.', iconColor: '#37a16a', iconBackground: '#e5f5eb' }] },
+  { name: 'Payments', apps: [{ name: 'Wise', icon: 'W', description: 'Yen harcamalarında şeffaf kur ve düşük ücretler.', iconColor: '#163f35', iconBackground: '#ddf5ec' }, { name: 'Revolut', icon: 'R', description: 'Kartını seyahat öncesi hazırlayıp harcamalarını takip et.', iconColor: '#191919', iconBackground: '#eeeeee' }] },
+  { name: 'Food', apps: [{ name: 'Tabelog', icon: '食', description: 'Yerel restoranları, puanları ve Japonca menüleri keşfet.', iconColor: '#c55b3f', iconBackground: '#fce9e0' }, { name: 'Uber Eats', icon: 'UE', description: 'Konaklamana ya da oteline hızlıca yemek söyle.', iconColor: '#168a4c', iconBackground: '#e3f5e9' }] },
+  { name: 'Communication', apps: [{ name: 'LINE', icon: 'L', description: 'Yerel iletişim için Japonya’nın en yaygın mesajlaşma uygulaması.', iconColor: '#168c49', iconBackground: '#e3f6e9' }, { name: 'Google Translate', icon: '文', description: 'Kamera ve çevrimdışı dil desteğiyle iletişimi kolaylaştır.', iconColor: '#3978c7', iconBackground: '#e7f0fc' }] },
+  { name: 'Internet', apps: [{ name: 'Airalo', icon: 'A', description: 'Japonya eSIM’ini yola çıkmadan satın al ve hazır et.', iconColor: '#7d55bf', iconBackground: '#f0e9fc' }, { name: 'Ubigi', icon: 'U', description: 'Güvenilir mobil veri paketini seyahat öncesinde kur.', iconColor: '#e06a43', iconBackground: '#fce9e2' }] },
+];
+
+const checklist = ['Suica installed', 'Airalo purchased', 'Offline Maps downloaded', 'Japanese language pack downloaded', 'Smart EX account created', 'Passport copy saved'];
+
+export default function BeforeYouGoPage() {
+  const [completed, setCompleted] = useLocalStorageState<string[]>('japan2027-before-you-fly', []);
+  const toggleItem = (item: string) => setCompleted((items) => items.includes(item) ? items.filter((entry) => entry !== item) : [...items, item]);
+
+  return <main className="min-h-screen bg-[#F7F6F3] pb-12 text-[#242821]"><div className="mx-auto max-w-[760px] px-[22px] pb-10 pt-5 sm:px-[38px]">
+    <header className="flex items-center justify-between"><Link href="/" className="grid h-10 w-10 place-items-center rounded-full bg-white text-[#4e584c] shadow-[0_4px_16px_rgba(47,51,44,.07)]" aria-label="Dashboard'a dön"><ArrowLeft size={18} /></Link><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#858a82]"><span className="grid h-7 w-7 place-items-center rounded-full bg-[#dce6d9] text-[#52614f]"><Plane size={14} /></span> Japan ’27</div><span className="h-10 w-10" aria-hidden="true" /></header>
+    <section className="fade-in pt-10"><span className="section-kicker">YOUR PRE-TRIP KIT</span><h1 className="mt-3 max-w-[390px] font-[var(--font-manrope)] text-[clamp(2.8rem,12vw,4.5rem)] font-semibold leading-[.92] tracking-[-.075em]">Before<br /><span className="text-[#7a9278]">You Go</span></h1><p className="mt-5 max-w-[370px] text-[13px] leading-[1.55] text-[#777c73]">Japonya’ya varmadan önce cebinde hazır olması gereken küçük ama önemli şeyler.</p></section>
+    <section className="mt-9 rounded-[28px] bg-[#dce6d9] p-5 shadow-[0_14px_35px_rgba(70,85,68,.08)] sm:p-6"><div className="flex items-start gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/75 text-[#61765d]"><ShieldCheck size={18} /></span><div><span className="text-[9px] font-bold uppercase tracking-[.14em] text-[#687864]">A calmer departure</span><h2 className="mt-1 font-[var(--font-manrope)] text-[19px] font-semibold tracking-[-.04em] text-[#3f513c]">Her şey hazır olduğunda yolculuk başlar.</h2></div></div><div className="mt-5 flex items-end justify-between border-t border-[#c8d6c4] pt-4"><span className="text-[11px] text-[#687864]">Before You Fly</span><strong className="font-[var(--font-manrope)] text-2xl tracking-[-.06em] text-[#3f513c]">{completed.length}<span className="text-sm font-normal text-[#687864]"> / {checklist.length}</span></strong></div></section>
+    <section className="mt-10"><div className="mb-4 flex items-end justify-between"><div><span className="section-kicker">ESSENTIAL APPS</span><h2 className="mt-1 font-[var(--font-manrope)] text-[22px] font-semibold tracking-[-.05em]">Cebine ekle</h2></div><span className="text-[10px] font-bold uppercase tracking-[.1em] text-[#a0a49c]">12 apps</span></div><div className="space-y-7">{categories.map((category) => <section key={category.name}><h3 className="mb-2.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#858a82]">{category.name}</h3><div className="grid gap-2.5 sm:grid-cols-2">{category.apps.map((app) => <AppCard key={app.name} category={category.name} {...app} />)}</div></section>)}</div></section>
+    <section className="mt-12 rounded-[28px] bg-white p-5 shadow-[0_10px_30px_rgba(56,59,50,.06)] sm:p-6"><div className="flex items-center justify-between"><div><span className="section-kicker">FINAL CHECK</span><h2 className="mt-1 font-[var(--font-manrope)] text-[22px] font-semibold tracking-[-.05em]">Before You Fly</h2></div><span className="grid h-9 w-9 place-items-center rounded-full bg-[#f2f6ef] text-[#7a9278]"><Check size={17} /></span></div><div className="mt-4">{checklist.map((item) => <ChecklistItem key={item} label={item} checked={completed.includes(item)} onChange={() => toggleItem(item)} />)}</div></section>
+  </div></main>;
+}

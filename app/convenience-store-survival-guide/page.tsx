@@ -1,0 +1,28 @@
+'use client';
+
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowLeft, HeartPulse, ShoppingBasket } from 'lucide-react';
+import { useState } from 'react';
+import { EmergencyCard } from '@/components/EmergencyCard';
+import { StoreChip } from '@/components/StoreChip';
+import { SurvivalChecklist } from '@/components/SurvivalChecklist';
+import { emergencyCategories, firstBasket, storeFilters, type StoreFilter } from '@/data/convenienceStoreGuide';
+import { useLocalStorageState } from '@/hooks/useLocalStorageState';
+
+export default function ConvenienceStoreSurvivalGuidePage() {
+  const [store, setStore] = useState<StoreFilter>('All');
+  const [completed, setCompleted] = useLocalStorageState<string[]>('japan2027-survival-checklist', []);
+  const visibleCategories = emergencyCategories.filter((category) => store === 'All' || category.products.some((product) => product.store === store));
+  const toggleItem = (id: string) => setCompleted((items) => items.includes(id) ? items.filter((item) => item !== id) : [...items, id]);
+
+  return <main className="min-h-screen bg-[#F7F6F3] pb-12 text-[#242821]"><div className="mx-auto max-w-[760px] px-[22px] pb-10 pt-5 sm:px-[38px]">
+    <header className="flex items-center justify-between"><Link href="/" className="grid h-10 w-10 place-items-center rounded-full bg-white text-[#4e584c] shadow-[0_4px_16px_rgba(47,51,44,.07)]" aria-label="Dashboard'a dön"><ArrowLeft size={18} /></Link><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#858a82]"><span className="grid h-7 w-7 place-items-center rounded-full bg-[#f2d9d2] text-[#a66f62]"><HeartPulse size={14} /></span> Travel Guide</div><span className="h-10 w-10" aria-hidden="true" /></header>
+    <section className="fade-in pt-10"><div className="relative h-[220px] overflow-hidden rounded-[28px] shadow-[0_16px_38px_rgba(56,59,50,.12)]"><Image src="/images/convenience/hero.jpg" alt="Japanese convenience store interior" fill sizes="(min-width: 760px) 684px, calc(100vw - 44px)" loading="lazy" className="object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#242821]/75 via-[#242821]/10 to-transparent" /><div className="absolute bottom-5 left-5 right-5"><span className="text-[9px] font-bold uppercase tracking-[.15em] text-white/75">THE JAPAN SAFETY NET</span><h1 className="mt-2 max-w-[520px] font-[var(--font-manrope)] text-[clamp(2.3rem,9vw,4rem)] font-semibold leading-[.94] tracking-[-.075em] text-white">Convenience Store<br /><span className="text-[#dce6d9]">Survival Guide</span></h1></div></div><p className="mt-5 max-w-[470px] text-[13px] leading-[1.55] text-[#777c73]">At 7-Eleven, Lawson or FamilyMart? Here&apos;s exactly what to buy when you need help fast.</p></section>
+    <section className="mt-8"><div className="mb-3 flex items-end justify-between"><div><span className="section-kicker">FIRST 10 MINUTES</span><h2 className="mt-1 font-[var(--font-manrope)] text-[22px] font-semibold tracking-[-.05em]">🚨 Landed in Japan? Buy These First</h2></div><span className="text-[10px] text-[#a0a49c]">5 essentials</span></div><div className="-mx-[22px] flex gap-3 overflow-x-auto px-[22px] pb-2 scrollbar-none sm:-mx-[38px] sm:px-[38px]">{firstBasket.map((item) => <div className="w-[126px] shrink-0 rounded-[22px] bg-white p-2.5 shadow-[0_8px_22px_rgba(56,59,50,.06)]" key={item.id}><div className="relative aspect-[4/5] overflow-hidden rounded-[16px] bg-[#e9eee7]"><Image src={item.image} alt={item.name} fill sizes="106px" loading="lazy" className="object-cover" /></div><strong className="mt-2 block truncate text-[11px] text-[#42483f]">{item.name}</strong><div className="mt-1.5 flex items-center justify-between gap-1"><span className="rounded-md bg-[#f1f3ee] px-1.5 py-1 text-[8px] font-bold text-[#687864]">{item.store}</span><span className="text-[9px] font-bold text-[#a66f62]">¥{item.price}</span></div></div>)}</div></section>
+    <section className="mt-9 rounded-[28px] bg-white p-5 shadow-[0_12px_32px_rgba(56,59,50,.06)] sm:p-6"><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-full bg-[#f2e8e0] text-[#a66f62]"><ShoppingBasket size={18} /></span><div><span className="section-kicker">QUICK STORE FILTER</span><h2 className="mt-1 font-[var(--font-manrope)] text-[18px] font-semibold tracking-[-.04em]">Find help nearby</h2></div></div><div className="-mx-1 mt-5 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-none">{storeFilters.map((filter) => <StoreChip key={filter} label={filter} active={store === filter} onClick={() => setStore(filter)} />)}</div></section>
+    <section className="mt-10"><div className="mb-4 flex items-end justify-between"><div><span className="section-kicker">READ THIS FIRST</span><h2 className="mt-1 font-[var(--font-manrope)] text-[24px] font-semibold tracking-[-.05em]">When things happen</h2></div><span className="text-[10px] text-[#a0a49c]">{visibleCategories.length} guides</span></div><div className="grid gap-4">{visibleCategories.map((category) => <EmergencyCard key={category.id} category={category} filter={store} />)}</div>{!visibleCategories.length && <div className="rounded-[24px] border border-dashed border-[#d7d9d2] p-8 text-center text-[12px] text-[#858a82]">No emergency guide for this store yet.</div>}</section>
+    <section className="mt-12"><SurvivalChecklist items={firstBasket} completed={completed} onToggle={toggleItem} /></section>
+    <p className="mt-5 px-2 text-center text-[10px] leading-relaxed text-[#a0a49c]">Prices are approximate and may vary by store or neighborhood.</p>
+  </div></main>;
+}

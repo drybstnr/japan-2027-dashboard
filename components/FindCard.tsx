@@ -1,0 +1,11 @@
+'use client';
+
+import { Check, Heart } from 'lucide-react';
+import type { JapanFind } from '@/data/japanFinds';
+
+export function FindCard({ find, saved, bought, onSave, onBuy }: { find: JapanFind; saved: boolean; bought: boolean; onSave: () => void; onBuy: () => void }) {
+  return <article className="overflow-hidden rounded-[24px] bg-white shadow-[0_9px_26px_rgba(56,59,50,.06)] transition-transform duration-200 hover:-translate-y-0.5">
+    <div className="relative flex h-[154px] items-center justify-center overflow-hidden" style={{ backgroundColor: find.accent }}><div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/25 blur-2xl" /><span className="relative font-[var(--font-manrope)] text-[38px] font-bold tracking-[-.08em] text-white drop-shadow-[0_3px_7px_rgba(40,45,38,.16)]">{find.visual}</span><button className={`absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full backdrop-blur-md transition-colors ${saved ? 'bg-white text-[#d9786f]' : 'bg-black/10 text-white'}`} onClick={onSave} aria-label={`${find.name} ${saved ? 'saved' : 'save'}`}><Heart size={17} fill={saved ? 'currentColor' : 'none'} /></button></div>
+    <div className="p-4"><div className="flex items-start justify-between gap-3"><div><span className="inline-flex rounded-md bg-[#f1f3ee] px-2 py-1 text-[9px] font-bold text-[#687864]">{find.store}</span><h3 className="mt-2 font-[var(--font-manrope)] text-[15px] font-semibold tracking-[-.04em] text-[#252a24]">{find.name}</h3></div><strong className="shrink-0 text-[11px] text-[#a66f62]">{find.price}</strong></div><p className="mt-2 min-h-[43px] text-[10px] leading-[1.45] text-[#858a82]">{find.reason}</p><button className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-[10px] font-bold transition-colors ${bought ? 'bg-[#dce6d9] text-[#52614f]' : 'bg-[#f5f6f2] text-[#7a9278]'}`} onClick={onBuy}><Check size={14} strokeWidth={bought ? 3 : 2} /> {bought ? 'Bought' : 'Mark as bought'}</button></div>
+  </article>;
+}

@@ -1,0 +1,11 @@
+'use client';
+
+import { Check } from 'lucide-react';
+import type { firstBasket } from '@/data/convenienceStoreGuide';
+
+type BasketItem = (typeof firstBasket)[number];
+
+export function SurvivalChecklist({ items, completed, onToggle }: { items: BasketItem[]; completed: string[]; onToggle: (id: string) => void }) {
+  const total = items.reduce((sum, item) => sum + item.price, 0);
+  return <section className="rounded-[28px] bg-[#242821] p-5 text-white shadow-[0_16px_36px_rgba(36,40,33,.16)] sm:p-6"><div className="flex items-start justify-between gap-4"><div><span className="text-[9px] font-bold uppercase tracking-[.15em] text-[#b9c8b5]">FIRST STOP · 7-ELEVEN</span><h2 className="mt-1 font-[var(--font-manrope)] text-[24px] font-semibold leading-tight tracking-[-.05em]">First 7-Eleven Basket<br /><span className="text-[#dce6d9]">(Under ¥1,000)</span></h2></div><span className="grid h-10 w-10 place-items-center rounded-full bg-[#dce6d9] text-[#52614f]"><Check size={18} /></span></div><div className="mt-5 divide-y divide-white/10">{items.map((item) => { const isDone = completed.includes(item.id); return <label className="flex cursor-pointer items-center gap-3 py-3" key={item.id}><input className="sr-only" type="checkbox" checked={isDone} onChange={() => onToggle(item.id)} /><span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border transition-colors ${isDone ? 'border-[#dce6d9] bg-[#dce6d9] text-[#52614f]' : 'border-white/30 text-transparent'}`}><Check size={14} strokeWidth={3} /></span><span className={`flex-1 text-[12px] ${isDone ? 'text-white/40 line-through' : 'text-white/85'}`}>{item.name}</span><span className="text-[10px] text-[#aeb8aa]">¥{item.price}</span></label>; })}</div><div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4"><span className="text-[11px] text-[#aeb8aa]">Estimated total</span><strong className="font-[var(--font-manrope)] text-xl tracking-[-.04em]">~¥{total.toLocaleString('en-US')}</strong></div></section>;
+}
